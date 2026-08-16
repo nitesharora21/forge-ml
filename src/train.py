@@ -8,6 +8,7 @@ from sklearn.datasets import load_breast_cancer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
+from mlflow.models import infer_signature
 
 
 ARTIFACT_DIR = Path("artifacts")
@@ -54,10 +55,18 @@ def main():
         mlflow.log_param("test_size", TEST_SIZE)
         # Metrics
         mlflow.log_metric("accuracy", accuracy)
+        # Setup input/output contract of the model, which helps in validation
+        # and serving the model safely
+        signature = infer_signature(X_train, model.predict(X_train))
         # This is not just logging the metadata about the model, its
         # logging the trained model itself, including the fitted parameters
         # learned when calling .fit() function in train_model()
-        mlflow.sklearn.log_model(sk_model=model, name="model")
+        mlflow.sklearn.log_model(
+                sk_model=model,
+                name="model",
+                registered_model_name="forge-ml-classifier",
+                signature=signature,
+                input_example=X_train[:5])
         print(f"Accuracy: {accuracy:.4f}")
         print(f"Model saved locally to: {MODEL_PATH}")
 
