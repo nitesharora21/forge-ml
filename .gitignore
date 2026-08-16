@@ -1,0 +1,7 @@
+.venv/
+activate
+.pytest_cache/
+artifacts
+*.pyc
+__pycache__/
+
