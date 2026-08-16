@@ -4,4 +4,5 @@ activate
 artifacts
 *.pyc
 __pycache__/
+mlflow.db
 
